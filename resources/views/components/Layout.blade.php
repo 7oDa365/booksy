@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booksy</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/app/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app/main.css') }}">
+    <link rel="shortcut icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Play:wght@400;700&display=swap');
+    </style>
+</head>
+
+<body>
+    <main id="mainbox">
+
+           
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
+                <div class="d-sm-flex" style="cursor: pointer; color: rgb(160, 160, 160);">
+                    <div class="me-3" id="dialButton">
+                        <i class="fas fa-phone"></i> {{ getSiteSetting('phone_number_1') }}
+                    </div>
+                    <div class="me-3" id="emailButton">
+                        <i class="fas fa-envelope"></i> {{ getSiteSetting('email') }}
+                    </div>
+                </div>
+                <h3 id="companyname" style="letter-spacing: 1px;">Booksy</h3>
+                <div class="d-sm-flex">
+                    <div class="d-flex justify-content-center align-items-center" style="margin-top: -6px;">
+                        <a href="{{ getSiteSetting('instagram') }}" class="text-white mt-2 me-2">
+                            <i class="fa-brands fa-instagram fs-6"></i>
+                        </a>
+                        <a href="{{ getSiteSetting('youtube') }}" class="text-white mt-2 me-2">
+                            <i class="fa-brands fa-youtube fs-6"></i>
+                        </a>
+                        <a href="{{ getSiteSetting('linkedin') }}" class="text-white mt-2 me-2">
+                            <i class="fa-brands fa-linkedin fs-6"></i>
+                        </a>
+                    </div>
+                    <select class="form-select" id="currency-value" aria-label="Default select example"
+                        style="height: 35px; width: 105px;">
+                        @if (session('currency') == 'EGP')
+                            <option value="EGP" selected>🇪🇬 EGP</option>
+                            <option value="USD">💲USD</option>
+                        @else
+                            <option value="EGP">🇪🇬 EGP</option>
+                            <option value="USD" selected>💲USD</option>
+                        @endif
+                        <input type="hidden" name="csrf-token" value="{{ csrf_token() }}" id="currency_csrf" />
+
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="position-absolute navbar navbar-expand-lg navbar-light bg-white w-100" style="z-index: 200;">
+            <div class="container-fluid border-bottom">
+                <a class="navbar-brand" href="{{ route('index') }}">
+                    <img src="{{ asset('storage/'.'logo.png') }}" alt="Booksy Logo"
+                        style="max-width: min(50px,50px); max-height: min(10vh,10vw);">
+                </a>
+                <a class="navbar-toggler" style="border: none; margin-right: -10px;" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <img src="{{ asset('storage/toggle.png') }}">
+                </a>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link md:mt-3" href="{{ route('index') }}"><i class="fa-solid fa-house"></i> HOME</a>
+                        </li>
+                        <li class="nav-item" id="menu">
+                            <a class="nav-link"><i class="fa-solid fa-layer-group"></i> SERVICES</a>
+                            <ul id="dropdown">
+                                @foreach ($globalOptions['services'] as $service)
+                                    <a href="{{ route('service', ['id' => $service->id]) }}" class="text-decoration-none text-dark">
+                                        <li>{{ $service->name }}</li>
+                                    </a>
+                                @endforeach
+                            </ul>
+                        </li>
+                        <li class="nav-item" id="menu">
+                            <a class="nav-link"><i class="fa-solid fa-store"></i> SHOP</a>
+                            <ul id="dropdown">
+                                <a href="{{ route('product-list-categorized', ['name' => 'all']) }}"
+                                    style="text-decoration:none; color:black;">
+                                    <li> All Products </li>
+                                </a>
+                                @foreach ($globalOptions['categories'] as $category)
+                                    <a href="{{ route('product-list-categorized', ['name' => $category]) }}"
+                                        style="text-decoration:none; color:black;">
+                                        <li>{{ $category }}</li>
+                                    </a>
+                                @endforeach
+                            </ul>
+                        </li>
+                        <li class="nav-item" id="menu">
+                            <a class="nav-link" href="{{ route('news.index') }}"><i class="fa-solid fa-newspaper"></i> NEWS</a>
+                        </li>
+                        <li class="nav-item" id="menu">
+                            <a class="nav-link" href="{{ route('gallery_list') }}"><i class="fa-solid fa-image"></i> GALLERY </a>
+                        </li>
+                        <li class="nav-item" id="menu">
+                            <a class="nav-link" href="{{ route('aboutpage') }}"><i class="fa-solid fa-address-card"></i> ABOUT</a>
+                        </li>
+                        <li class="nav-item" id="menu">
+                            <a class="nav-link" href="{{ route('contactpage') }}"><i class="fa-solid fa-address-book"></i> CONTACT</a>
+                        </li>
+                    </ul>
+                    <div class="icon-container d-flex mx-2 mt-2 mt-md-0 mb-3 mb-md-0">
+                        @auth
+                            <a href="{{ route('profile') }}"
+                                class="text-dark me-3 text-decoration-none border px-3 py-1 rounded">
+                                <i class="fas fa-user fs-6"></i> {{ Auth::user()->name }}
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" class="text-dark me-3 fs-6">
+                                <i class="fas fa-user fs-6"></i>
+                            </a>
+                        @endauth
+                        <div>
+                            <a href="{{ route('cart.index') }}" class="text-dark me-3">
+                                <span class="position-absolute bg-dark text-white fw-bold px-1"
+                                    style="font-size: 10px; border-radius: 100%; margin-top: -5px; margin-left: 8px; z-index: 2;">
+                                    {{ session('cart_count', 0) }}
+                                </span>
+                                <i class="fas fa-shopping-cart fs-6"></i>
+                            </a>
+                        </div>
+                        <a id="searchopen" class="text-dark"><i class="fas fa-search fs-6"></i></a>
+                    </div>
+                    
+                </div>
+            </div>
+                 <!-- search box -->
+        <div id="searchbox" class="d-flex justify-content-center position-absolute">
+            <form id="searchform" class="d-flex" action="{{ route('search') }}" method="get"
+                onsubmit="return searchfunc();">
+                <p id="searchmsg" class="text-danger position-absolute" style="margin-top: -20px; font-size: 15px; z-index: 1000;"></p>
+                <input id="searchinput" type="text" name="q"
+                    placeholder="Search by product name, manufacturer, category, news title">&nbsp;
+                <button id="searchbtn" type="submit" class="px-3">Search</button>
+                <input type="hidden" name="page" value="1">
+                    <i id="searchcancel" style="top: 0px; right: 2px; cursor: pointer; border-radius: 100px;" fill="currentColor" class="fa-solid fa-xmark fs-5 position-absolute bg-white p-1"></i>
+            </form>
+        </div>
+        </nav>
+        
+
+        <!-- Messages -->
+        @if (session('messages'))
+            <ul class="messages" style="margin-top: 12vh; position: absolute; z-index: 1000; right: 15px;">
+                @foreach (session('messages') as $message)
+                    <div class="alert alert-{{ $message['type'] }}" role="alert">
+                        {{ $message['text'] }}
+                    </div>
+                @endforeach
+            </ul>
+        @endif
+
+        <!-- Main Content -->
+        @yield('content')
+    </main>
+
+    <footer class="footer mt-4">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Services Section -->
+                <div class="col-md-3">
+                    <h5><i class="fa-solid fa-layer-group fs-6"></i> Services</h5>
+                    <ul>
+                        @if($globalOptions['services'] )
+                            @foreach($globalOptions['services']->slice(0, 6) as $service)
+                                <a href="{{ route('service', ['id' => $service->id]) }}" class="text-decoration-none text-secondary">
+                                    <li id="hover_white">{{ $service->name }}</li>
+                                </a>
+                            @endforeach
+                        @endif
+                    </ul>
+                </div>
+    
+                <!-- Important Links Section -->
+                <div class="col-md-3">
+                    <h5><i class="fa-solid fa-link fs-6"></i> Important Links</h5>
+                    <ul class="text-secondary">
+                        @if($globalOptions['links'])
+                            @foreach($globalOptions['links']->slice(0,6) as $link)
+                                <a href="{{ $link->url }}" target="_blank" class="text-decoration-none text-secondary">
+                                    <li id="hover_white">{{ $link->name }}</li>
+                                </a>
+                            @endforeach
+                        @endif
+                    </ul>
+                </div>
+    
+                <!-- Location Section -->
+                <div class="col-md-3">
+                    <h5><i class="fa-solid fa-location-dot fs-6"></i> Location</h5>
+                    <div class="text-secondary">
+                        <a href="https://www.google.com/maps/place/%D9%83%D9%85%D8%A8%D9%88%D9%86%D8%AF+%D9%87%D9%8A%D8%A6%D8%A9+%D9%82%D8%B6%D8%A7%D9%8A%D8%A7+%D8%A7%D9%84%D8%AF%D9%88%D9%84%D8%A9%E2%80%AD/@29.9733896,31.5035232,14.35z/data=!4m15!1m8!3m7!1s0x14583cc75436d909:0x7f921d4528ec3e03!2sThe+5th+Settlement,+Industrial+Area,+New+Cairo+1,+Cairo+Governorate!3b1!8m2!3d30.0084868!4d31.4284756!16s%2Fm%2F0czb9_3!3m5!1s0x1458237507f08ca5:0xae14d296396fa37f!8m2!3d29.9655116!4d31.5171978!16s%2Fg%2F11t1yh6jmq?entry=ttu&g_ep=EgoyMDI1MTExNy4wIKXMDSoASAFQAw%3D%3D"
+                           class="text-decoration-none text-secondary" target="_blank">
+                            <pre id="hover_white" style="font-size: 1rem; font-family: Play, sans-serif;">
+                                {{ $globalOptions['footer']['location'] ?? 
+'
+Cairo Egypt
+Fifth Settlement, New Cairo'}}
+                            </pre>
+                        </a>
+                    </div>
+                </div>
+    
+                <!-- Social Media Section -->
+                <div class="col-md-3">
+                    <h5><i class="fa-solid fa-hashtag"></i> Social Media Channel</h5>
+                    <p class="text-secondary">Follow to get special offers, free giveaways, and once-in-a-lifetime deals.</p>
+                    <a href="{{ getSiteSetting('instagram') }}" class="text-secondary mt-2 me-2">
+                        <i id="hover_white" class="fa-brands fa-instagram mx-1 fs-4"></i>
+                    </a>
+                    <a href="{{ getSiteSetting('youtube') }}" class="text-secondary mt-2 me-2">
+                        <i id="hover_white" class="fa-brands fa-youtube mx-1 fs-4"></i>
+                    </a>
+                    <a href="{{ getSiteSetting('linkedin') }}" class="text-secondary mt-2 me-2">
+                        <i id="hover_white" class="fa-brands fa-linkedin mx-1 fs-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Loading Animation -->
+    <div class="load" id="loading">
+        <svg class="pl" width="240" height="240" viewBox="0 0 240 240" style="display:inherit;">
+            <circle class="pl__ring pl__ring--a" cx="120" cy="120" r="105" fill="none" stroke="#000" stroke-width="20"
+                    stroke-dasharray="0 660" stroke-dashoffset="-330" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--b" cx="120" cy="120" r="35" fill="none" stroke="#000" stroke-width="20"
+                    stroke-dasharray="0 220" stroke-dashoffset="-110" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--c" cx="85" cy="120" r="70" fill="none" stroke="#000" stroke-width="20"
+                    stroke-dasharray="0 440" stroke-linecap="round"></circle>
+            <circle class="pl__ring pl__ring--d" cx="155" cy="120" r="70" fill="none" stroke="#000" stroke-width="20"
+                    stroke-dasharray="0 440" stroke-linecap="round"></circle>
+        </svg>
+        <h4 class="text-center text-white"> Processing </h4>
+    </div>
+    
+
+    <script>
+        // Search functionality
+        let searchbox = document.querySelector('#searchbox');
+        let searchcancel = document.querySelector('#searchcancel');
+        let searchopen = document.querySelector('#searchopen');
+        let searchmsg = document.querySelector('#searchmsg');
+
+        // Search input validation
+        function searchfunc() {
+            let searchinput = document.querySelector('#searchinput').value;
+            
+            if (searchinput.length < 3) {
+                searchmsg.innerText = "Search text must be at least 3 characters!";
+                setTimeout(() => {
+                    searchmsg.innerText = "";
+                }, 3000);
+                return false;
+            }
+            return true;
+        }
+
+        // Search box toggle
+        searchopen.addEventListener("click", () => {
+            searchbox.style.height = "max-content";
+            searchbox.style.transition = "0.3s";
+            searchbox.style.display = "initial";
+            document.querySelector('#searchinput').focus();
+
+        });
+
+        searchcancel.addEventListener("click", () => {
+            searchbox.style.height = "0%";
+            setTimeout(() => {
+                searchbox.style.display = "none";
+            }, 300);
+            searchbox.style.transition = "0.3s";
+        });
+
+        // Close search box on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && searchbox.style.display === 'block') {
+                searchcancel.click();
+            }
+        });
+
+        document.querySelector("#currency-value").addEventListener('change', (e) => {
+            let selected = e.target.value;
+
+            setCurrency(selected);
+        })
+
+        function setCurrency(currency) {
+    console.log(currency);
+    fetch("/set_currency", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('#currency_csrf').value
+        },
+        body: JSON.stringify({ "currency": currency })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert("Failed to set currency: " + data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Error setting currency:", error);
+        alert("An error occurred while setting the currency.");
+    });
+}
+
+        window.addEventListener('load', () => {
+            document.querySelectorAll(".alert").forEach((value, key) => {
+                setTimeout(() => {
+                    value.style.opacity = 0
+                }, 2000 * (key + 1))
+            })
+        })
+
+        // Email functionality
+        document.getElementById("emailButton").addEventListener("click", function () {
+            const email = '{{ $header->email ?? "info@booksy.com"}}';
+            const subject = "Contact To Distributor";
+            const body = "type your message here";
+
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            window.location.href = mailtoLink;
+        });
+
+        // phone number functionality
+        document.getElementById("dialButton").addEventListener("click", function () {
+            const phoneNumber = '{{$header->phone_number ?? "+2001551822365"}}';
+            window.location.href = `tel:${phoneNumber}`;
+        });
+
+        // loading functionality
+        const showLoading = (e) => {
+            document.getElementById("loading").style.display = "flex";
+            document.querySelector("body").style.overflow = "hidden";
+            return true;
+        }
+    </script>
+    @stack('scripts')
+</body>
+
+</html>
